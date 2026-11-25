@@ -4,7 +4,6 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>零信任云平台原型 v1.0.1</title>
-<!-- publish-sync-marker -->
 <style>
 :root {
   --bg: #f2f3f5;
@@ -66,6 +65,9 @@ a { color: var(--brand); text-decoration: none; }
 .perm-table td.l1 { font-weight: 600; background: #fafbfc; vertical-align: top; width: 140px; }
 .perm-table td.l2 { width: 160px; color: var(--sub); }
 .perm-table .ops { display: flex; flex-wrap: wrap; gap: 8px 18px; }
+.qmark { position: relative; display: inline-flex; align-items: center; justify-content: center; width: 16px; height: 16px; margin-left: 4px; border-radius: 50%; background: #e8edf5; color: #3d4d66; font-size: 12px; font-weight: 700; cursor: help; vertical-align: middle; }
+.qmark-pop { display: none; position: absolute; left: 20px; top: -6px; z-index: 20; width: 220px; padding: 8px 10px; border-radius: 6px; background: #1f2430; color: #fff; font-size: 12px; font-weight: 400; line-height: 1.6; text-align: left; white-space: normal; }
+.qmark:hover .qmark-pop, .qmark:focus .qmark-pop { display: block; }
 .perm-table label { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; color: var(--sub); }
 .intro { max-width: 960px; margin: 0 auto; }
 .intro .hero { padding: 28px; display: flex; gap: 20px; align-items: center; }
@@ -659,9 +661,7 @@ td[contenteditable="true"]:focus { outline: 2px solid var(--brand-soft); backgro
 
 | 一级功能 | 二级功能 | 三级功能 | 超级管理员 | 管理员 | 运维员 | 浏览者 |
 | --- | --- | --- | --- | --- | --- | --- |
-| 工作台 | 防护网络 | 接入防护网络 | ✓ | ✓ | ✓ |  |
-|  |  | 断开防护网络 | ✓ | ✓ | ✓ |  |
-|  |  | 认证当前设备 | ✓ | ✓ | ✓ |  |
+| 工作台 | 防护网络 | 认证当前设备 | ✓ | ✓ | ✓ |  |
 |  | 概览 | 查看汇总 | ✓ | ✓ | ✓ | ✓ |
 |  |  | 查看近 24 小时告警 | ✓ | ✓ | ✓ | ✓ |
 | 权限管理 | 角色 | 查看角色 | ✓ | ✓ |  |  |
@@ -794,7 +794,7 @@ td[contenteditable="true"]:focus { outline: 2px solid var(--brand-soft); backgro
 | **需求描述** | 角色管理、应用权限和高风险确认 |
 | **优先级** | P0 |
 | **输入/前置条件** | 当前用户角色为超级管理员或管理员 |
-| **功能描述** | 1.**列表字段**：角色名、角色ID、角色描述、操作<br>1）默认角色为超级管理员、管理员、运维员、浏览者。<br>2）双击角色名可编辑：超级管理员和管理员不可编辑<br>2. **新建角色**：新建时填写角色名，角色描述（非必填项）<br>3.**操作**-权限：<br>1）超级管理员：应用权限与高风险操作二次确认全部禁用，不可编辑。管理员：应用权限只读，高风险操作仍可配置。其余默认角色可重新勾选功能权限并配置高风险确认。<br>2）高风险操作列表=已勾选权限和高风险操作清单的交集，可配置高危操作的二次确认动作：无、扫码确认、管理员审批。其中默认项：<br>a .高风险操作清单：零信任防护网络-接入、角色-删除角色、角色-权限、用户-删除、访问策略-新增、访问策略-删除、可信设备-认证、可信设备-吊销、云主机-创建、云主机-远程访问、云主机-终止、安全组-编辑规则、安全组-删除、弹性 IP-释放<br>b.当角色为运维员，零信任防护网络-接入、云主机-远程访问默认【扫码确认】；创建云主机、云主机-终止默认为【管理员审批】；其他默认无<br>c.当角色为管理员或超级管理员，零信任防护网络-接入、访问策略-删除、云主机-创建、云主机-远程访问、云主机-终止默认【扫码确认】（超管仅展示默认值，不可改）<br>4. **操作**-删除：删除时需判断该角色下是否还有用户。不可删除超级管理员和管理员。 |
+| **功能描述** | 1.**列表字段**：角色名、角色ID、角色描述、操作<br>1）默认角色为超级管理员、管理员、运维员、浏览者。<br>2）双击角色名可编辑：超级管理员和管理员不可编辑<br>2. **新建角色**：新建时填写角色名，角色描述（非必填项）<br>3.**操作**-权限：<br>1）超级管理员：应用权限与高风险操作二次确认全部禁用，不可编辑。管理员：应用权限只读，高风险操作仍可配置。其余默认角色可重新勾选功能权限并配置高风险确认。<br>2）高风险操作列表=已勾选权限和高风险操作清单的交集，可配置高危操作的二次确认动作：无、扫码确认、管理员审批。其中默认项：<br>a .高风险操作清单：角色-删除角色、角色-权限、用户-删除、访问策略-新增、访问策略-删除、可信设备-认证、可信设备-吊销、云主机-创建、云主机-远程访问、云主机-终止、安全组-编辑规则、安全组-删除、弹性 IP-释放<br>b.当角色为运维员，云主机-远程访问默认【扫码确认】；创建云主机、云主机-终止默认为【管理员审批】；其他默认无<br>c.当角色为管理员或超级管理员，访问策略-删除、云主机-创建、云主机-远程访问、云主机-终止默认【扫码确认】（超管仅展示默认值，不可改）<br>4. **操作**-删除：删除时需判断该角色下是否还有用户。不可删除超级管理员和管理员。 |
 | **输出/后置条件** | 1. 保存成功后，在列表中新增该角色。删除成功后角色从列表消失。<br>2. 角色名为空，提示「请填写角色名」。<br>3. 角色名含特殊字符，提示「角色名不能包含特殊字符」。<br>4. 角色名重复，提示「角色名已存在」。<br>5. 角色下仍有用户，提示「当前角色有关联用户，不可删除」。 |
 
 ### 6.5.2 用户
@@ -804,7 +804,7 @@ td[contenteditable="true"]:focus { outline: 2px solid var(--brand-soft); backgro
 | **需求描述** | 添加成员、可为用户绑定多个角色，并允许在用户上收紧已授权资源 |
 | **优先级** | P0 |
 | **输入/前置条件** | 当前角色可进入权限管理；添加时有候选成员 |
-| **功能描述** | **列表字段**：用户名、用户ID（同步 HiBro）、部门、岗位、角色、状态、最近登录、操作。角色支持**一对多**展示（如「运维员、浏览者」）。<br>**添加用户**：同步 HiBro 组织架构，勾选后同步到右侧待新增列表。<br>1）待新增字段：姓名、部门、角色（可多选）。<br>2）角色默认浏览者；权限与授权资源取所选角色的**并集**。<br>**操作-访问策略**：展示该用户经访问策略得到的已授权资源；取消勾选后不可访问该资源，行仍保留；可配置可用系统用户名（星号表示可使用全部用户名）。可吊销该用户可信设备。单次有效时长为**数字输入 1–24**，旁侧单位「小时」。<br>**操作-修改角色**：角色可多选；权限与授权资源取并集。在职超级管理员行另有**转移**：选在职用户；转移后原超管变为管理员；接收人角色不受限，加上超级管理员角色（可保留原角色）。<br>**离职**：访问策略抽屉中授权资源与可信设备为空；可信设备列表中该用户相关设备默认已吊销。<br>**操作-删除用户**：超级管理员 / 管理员不可删除；删除为软删除。 |
+| **功能描述** | **列表字段**：用户名、用户ID（同步 HiBro）、部门、岗位、角色、状态、最近登录、操作。角色支持**一对多**展示（如「运维员、浏览者」）。<br>**添加用户**：同步 HiBro 组织架构，勾选后同步到右侧待新增列表。<br>1）待新增字段：姓名、部门、角色（可多选）、权限冲突。<br>2）角色默认浏览者。所选角色的操作权限没有冲突时，权限冲突为「-」。冲突定义是一个角色有某操作权限、另一个角色没有。有冲突时该格为单选：并集、交集，默认并集。多角色的数据权限始终取并集。表头「权限冲突」用问号说明「多角色的数据权限取并集」。<br>**操作-访问策略**：展示该用户经访问策略得到的已授权资源；取消勾选后不可访问该资源，行仍保留；可配置可用系统用户名（星号表示可使用全部用户名）。可吊销该用户可信设备。单次有效时长为**数字输入 1–24**，旁侧单位「小时」。<br>**操作-修改角色**：角色可多选；权限冲突为单选，规则与添加用户相同。在职超级管理员行另有**转移**：选在职用户；转移后原超管变为管理员；接收人角色不受限，加上超级管理员角色（可保留原角色）。<br>**离职**：访问策略抽屉中授权资源与可信设备为空；可信设备列表中该用户相关设备默认已吊销。<br>**操作-删除用户**：超级管理员 / 管理员不可删除；删除为软删除。 |
 | **输出/后置条件** | 添加或修改成功后，列表更新对应用户信息（含用户ID、多角色）。<br>取消某用户的资源后，该用户不能再对这台资源远程登录，若正在访问将立即被断开。<br>未勾选用户点击【确认添加】，提示「请先在左侧勾选要添加的用户」。<br>超管转移成功后，原超管为管理员，接收人具备超级管理员。 |
 
 ## 6.6 零信任策略
@@ -1182,7 +1182,6 @@ const state = {
 
 const permTree = [
   { l1: '工作台', l2: [
-    { name: '零信任防护网络', ops: ['接入', '断开'] },
     { name: '资源汇总', ops: ['查看资源汇总KPI'] },
     { name: '近24小时告警', ops: ['查看告警列表', '查看详情'] },
   ]},
@@ -1262,6 +1261,7 @@ const VERSIONS = [
       '用户多角色 / 超管转移；访问策略单次时长 1–24；可信设备分组与吊销无列表「重新认证」。',
       '数据权限：非管理员主机仅已授权；VPC/安全组/弹性 IP 全量+创建用户、仅改删自己创建；浏览者按 4.2 可查看资源页。',
       '角色权限：超级管理员打开「权限」时，应用权限勾选与高风险操作二次确认全部禁用不可编辑；管理员仍为应用权限只读、高风险可配。',
+      '角色权限说明不再把接入列入白名单；多角色操作权限有冲突时可选并集或交集，数据权限取并集。',
     ],
   },
   {
@@ -2107,10 +2107,13 @@ function drawerBody(type, p){
       <div class="field" style="margin-top:12px">
         <label>角色 *（可多选）</label>
         <div id="userRoleBoxes">
-          ${roles.map(n => `<label style="display:flex;gap:8px;align-items:center;margin:6px 0"><input type="checkbox" value="${n}" ${picked.includes(n) ? 'checked' : ''}> ${n}</label>`).join('')}
+          ${roles.map(n => `<label style="display:flex;gap:8px;align-items:center;margin:6px 0"><input type="checkbox" value="${n}" ${picked.includes(n) ? 'checked' : ''} onchange="refreshUserRoleConflict()"> ${n}</label>`).join('')}
         </div>
       </div>
-      ${note(['一名用户可绑定多个角色。权限和授权资源取各角色的并集。'], 'margin-top:12px')}`;
+      <div class="field" style="margin-top:12px" id="userRoleConflict">
+        ${userRoleConflictHtml(picked, state.userPermMerge && state.userPermMerge[p.user])}
+      </div>
+      ${note(['操作权限有冲突时可选并集或交集，默认并集；数据权限取并集。'], 'margin-top:12px')}`;
   }
   if (type === 'super-transfer') {
     const from = p.user || '';
@@ -2163,12 +2166,58 @@ function userRolesOf(user, fallback){
   if (fallback) return [fallback];
   return ['浏览者'];
 }
+/* 操作权限集合：permTree × permChecked；集合不同即冲突（A 有而 B 没有） */
+function roleOpSignature(role){
+  const keys = [];
+  permTree.forEach(b => b.l2.forEach(s => s.ops.forEach(op => {
+    if (permChecked(role, b.l1, op, s.name)) keys.push(b.l1 + '|' + s.name + '|' + op);
+  })));
+  return keys.join('\n');
+}
+function rolesOpConflict(roles){
+  if (!roles || roles.length < 2) return false;
+  const sig = roleOpSignature(roles[0]);
+  return roles.some(r => roleOpSignature(r) !== sig);
+}
+function permDataQmark(){
+  return '<span class="qmark" tabindex="0">?<span class="qmark-pop">多角色的数据权限取并集</span></span>';
+}
+function permMergeRadios(name, mode, pendingName){
+  const m = mode === 'inter' ? 'inter' : 'union';
+  const one = (val, label) => {
+    const oc = pendingName ? ` onchange="setPendingMerge('${pendingName}','${val}')"` : '';
+    return `<label style="display:inline-flex;gap:4px;margin-right:10px;align-items:center"><input type="radio" name="${name}" value="${val}" ${m === val ? 'checked' : ''}${oc}> ${label}</label>`;
+  };
+  return one('union', '并集') + one('inter', '交集');
+}
+function userRoleConflictHtml(roles, savedMode){
+  const head = `<label>权限冲突${permDataQmark()}</label>`;
+  if (!rolesOpConflict(roles)) return head + '<div style="margin-top:6px">—</div>';
+  const mode = savedMode === 'inter' ? 'inter' : 'union';
+  return head + `<div style="margin-top:6px">${permMergeRadios('userPermMerge', mode)}</div>`;
+}
+function refreshUserRoleConflict(){
+  const el = document.getElementById('userRoleConflict');
+  const box = document.getElementById('userRoleBoxes');
+  if (!el || !box) return;
+  const roles = [...box.querySelectorAll('input:checked')].map(inp => inp.value);
+  const cur = el.querySelector('input[type="radio"]:checked');
+  const mode = cur && cur.value === 'inter' ? 'inter' : 'union';
+  el.innerHTML = userRoleConflictHtml(roles, mode);
+}
 function saveUserRoles(user){
   const box = document.getElementById('userRoleBoxes');
   const roles = box ? [...box.querySelectorAll('input:checked')].map(el => el.value) : [];
   if (!roles.length) { toast('请至少选择一个角色'); return; }
   if (!state.userRoleMap) state.userRoleMap = {};
   state.userRoleMap[user] = roles;
+  if (!state.userPermMerge) state.userPermMerge = {};
+  if (rolesOpConflict(roles)) {
+    const picked = document.querySelector('#userRoleConflict input[type="radio"]:checked');
+    state.userPermMerge[user] = (picked && picked.value === 'inter') ? 'inter' : 'union';
+  } else {
+    delete state.userPermMerge[user];
+  }
   toast('已修改 ' + user + ' 的角色，权限与授权资源取并集');
   closeDrawer();
   renderApp();
@@ -2331,7 +2380,6 @@ function permToggle(role, key, on){
 /* ---------- 高风险操作 · 二次确认（与「能不能做」分离）---------- */
 /* 敏感操作白名单：[二级功能, 操作]；仅「上表已勾选 ∩ 白名单」的操作出现在二次确认表 */
 const SEC_WHITELIST = [
-  ['零信任防护网络', '接入'],
   ['云主机', '远程访问'],
   ['角色', '删除角色'], ['角色', '权限'],
   ['用户', '删除'],
@@ -2347,11 +2395,11 @@ function secDefault(role, l2, op){
   const k = l2 + '|' + op;
   const isMgr = role === '超级管理员' || role === '管理员';
   if (isMgr) {
-    if (['零信任防护网络|接入', '访问策略|删除', '云主机|创建', '云主机|远程访问', '云主机|终止'].includes(k)) return 'qr';
+    if (['访问策略|删除', '云主机|创建', '云主机|远程访问', '云主机|终止'].includes(k)) return 'qr';
     return 'none';
   }
   // 运维员及自定义角色
-  if (['零信任防护网络|接入', '云主机|远程访问'].includes(k)) return 'qr';
+  if (k === '云主机|远程访问') return 'qr';
   if (['云主机|创建', '云主机|终止'].includes(k)) return 'approve';
   return 'none';
 }
@@ -2397,11 +2445,11 @@ function renderSecBox(role, readonly){
     </table>
     ${note([
       '「能不能做」由上方权限勾选决定；本节只决定执行前是否需要<b>签名认证</b>或<b>管理员审批</b>。仅「已勾选 ∩ 高风险白名单」的操作出现在此处。',
-      '<b>高风险操作白名单</b>：零信任防护网络-接入；云主机-远程访问 / 创建 / 终止；角色-删除角色 / 权限；用户-删除；访问策略-删除；可信设备-确认 / 吊销；安全组-编辑规则 / 删除；弹性 IP-释放。',
+      '<b>高风险操作白名单</b>：云主机-远程访问 / 创建 / 终止；角色-删除角色 / 权限；用户-删除；访问策略-删除；可信设备-确认 / 吊销；安全组-编辑规则 / 删除；弹性 IP-释放。',
       '同一操作只能选一种方式：无 / 签名认证 / 管理员审批互斥。',
       '审批人不在界面配置：仅<b>超级管理员</b>（应用第一个管理者）拥有审批权限；管理员及其他角色无审批权限。',
-      '<b>默认·运维员</b>：零信任防护网络-接入、云主机-远程访问 = 签名认证；云主机-创建、云主机-终止 = 管理员审批；其余白名单项默认「无」。',
-      '<b>默认·管理员 / 超级管理员</b>：零信任防护网络-接入、访问策略-删除、云主机-创建、云主机-远程访问、云主机-终止 = 签名认证；其余白名单项默认「无」。',
+      '<b>默认·运维员</b>：云主机-远程访问 = 签名认证；云主机-创建、云主机-终止 = 管理员审批；其余白名单项默认「无」。',
+      '<b>默认·管理员 / 超级管理员</b>：访问策略-删除、云主机-创建、云主机-远程访问、云主机-终止 = 签名认证；其余白名单项默认「无」。',
       '「认证当前设备」是工作台 / 可信设备流程（固定扫码），不是操作勾选项，故不在本表。',
       '<b>云主机-远程访问</b>：等同于「远程访问」功能中已授权资源的远程访问；列表点「远程访问」按上表确认方式执行（默认同签名认证）。',
       '云主机-创建 配置为「管理员审批」时：创建成功后主机进入列表，状态为「待审批」，超级管理员审批通过前不可启动（见资源管理 / 云主机）。',
@@ -2457,8 +2505,9 @@ function vRolePerm(){
       '本页配置该角色的<b>应用权限</b>（功能菜单与操作）与<b>高风险操作</b>二次确认；资源访问范围在「零信任策略 → 访问策略」中按角色 + 资源标签配置。',
       '<b>超级管理员</b>：应用权限与高风险操作全部禁用，不可编辑。',
       '浏览者默认勾选：工作台数据查看；云主机 / VPC / 安全组 / 弹性 IP「查看」；可信设备「查看」。无远程、权限管理、访问策略、审计及一切写操作。工作台资源 / 可信设备 KPI 可跳只读页；告警不跳审计。',
-      '<b>高风险操作白名单</b>（仅已勾选 ∩ 白名单出现在上方表）：零信任防护网络-接入；云主机-远程访问 / 创建 / 终止；角色-删除角色 / 权限；用户-删除；访问策略-删除；可信设备-确认 / 吊销；安全组-编辑规则 / 删除；弹性 IP-释放。',
-      '<b>默认二次确认</b>：运维员 → 接入、云主机-远程访问=签名认证，创建、终止=管理员审批，其余=无；管理员 / 超级管理员 → 接入、访问策略-删除、云主机-创建 / 远程访问 / 终止=签名认证，其余=无。',
+      '<b>高风险操作白名单</b>（仅已勾选 ∩ 白名单出现在上方表）：云主机-远程访问 / 创建 / 终止；角色-删除角色 / 权限；用户-删除；访问策略-删除；可信设备-确认 / 吊销；安全组-编辑规则 / 删除；弹性 IP-释放。',
+      '<b>默认二次确认</b>：运维员 → 云主机-远程访问=签名认证，创建、终止=管理员审批，其余=无；管理员 / 超级管理员 → 访问策略-删除、云主机-创建 / 远程访问 / 终止=签名认证，其余=无。',
+      '接入和断开防护网络是所有用户的天然权限，不在本页勾选。',
       '仅<b>超级管理员</b>拥有审批权限；管理员及其他角色无审批权限。',
     ])}
   </div>`;
@@ -3220,12 +3269,25 @@ function setPendingRole(name, role, on){
   if (on) roles.push(role);
   if (!roles.length) { toast('至少保留一个角色'); roles = ['浏览者']; }
   u.roles = roles;
+  if (!rolesOpConflict(roles)) delete u.permMerge;
   addRefresh();
+}
+function setPendingMerge(name, mode){
+  const u = state.pendingUsers.find(x => x.name === name);
+  if (!u) return;
+  if (!rolesOpConflict(pendingRoles(u))) { delete u.permMerge; return; }
+  u.permMerge = mode === 'inter' ? 'inter' : 'union';
 }
 function confirmAddUsers(){
   if (!state.pendingUsers.length) { toast('请先在左侧勾选要添加的用户'); return; }
   if (!state.userRoleMap) state.userRoleMap = {};
-  state.pendingUsers.forEach(u => { state.userRoleMap[u.name] = pendingRoles(u); });
+  if (!state.userPermMerge) state.userPermMerge = {};
+  state.pendingUsers.forEach(u => {
+    const rs = pendingRoles(u);
+    state.userRoleMap[u.name] = rs;
+    if (rolesOpConflict(rs)) state.userPermMerge[u.name] = u.permMerge === 'inter' ? 'inter' : 'union';
+    else delete state.userPermMerge[u.name];
+  });
   const n = state.pendingUsers.length;
   state.pendingUsers = [];
   toast(`已添加 ${n} 个用户并同步至用户列表`);
@@ -3244,12 +3306,17 @@ function vUsersAdd(){
         : `<button class="${pendingHas(u.name) ? 'on' : ''}" style="padding-left:24px" onclick="toggleOrgUser('${u.name}','${g.dept}')"><input class="chk" type="checkbox" ${pendingHas(u.name) ? 'checked' : ''}> ${u.name}</button>`
       ).join('');
   }).join('');
-  const rows = state.pendingUsers.length ? state.pendingUsers.map(u => `
+  const rows = state.pendingUsers.length ? state.pendingUsers.map(u => {
+    const rs = pendingRoles(u);
+    const cell = rolesOpConflict(rs) ? permMergeRadios('pm-' + u.name, u.permMerge, u.name) : '—';
+    return `
               <tr>
                 <td>${u.name}</td><td>${u.dept}</td>
-                <td>${roles.map(r => `<label style="display:inline-flex;gap:4px;margin-right:10px;align-items:center"><input type="checkbox" ${pendingRoles(u).includes(r) ? 'checked' : ''} onchange="setPendingRole('${u.name}','${r}',this.checked)"> ${r}</label>`).join('')}</td>
-              </tr>`).join('')
-    : `<tr><td colspan="3" class="muted">暂未选择用户，请在左侧组织架构中勾选</td></tr>`;
+                <td>${roles.map(r => `<label style="display:inline-flex;gap:4px;margin-right:10px;align-items:center"><input type="checkbox" ${rs.includes(r) ? 'checked' : ''} onchange="setPendingRole('${u.name}','${r}',this.checked)"> ${r}</label>`).join('')}</td>
+                <td>${cell}</td>
+              </tr>`;
+  }).join('')
+    : `<tr><td colspan="4" class="muted">暂未选择用户，请在左侧组织架构中勾选</td></tr>`;
   return `<div class="card stack">
     <div class="toolbar">
       <div class="l"><button class="btn" onclick="closePageTab('add-user')">返回</button><span class="pg-title">从 IM 组织选择用户</span></div>
@@ -3265,10 +3332,10 @@ function vUsersAdd(){
         <div class="box-hd">待新增用户（${state.pendingUsers.length}）</div>
         <div style="padding:8px">
           <table>
-            <thead><tr><th>姓名</th><th>部门</th><th>角色 *（可多选）</th></tr></thead>
+            <thead><tr><th>姓名</th><th>部门</th><th>角色 *（可多选）</th><th>权限冲突${permDataQmark()}</th></tr></thead>
             <tbody>${rows}</tbody>
           </table>
-          ${note(['默认角色=浏览者，可多选角色；权限与授权资源取并集。左侧勾选 / 取消与右侧待新增列表实时同步。'], 'margin-top:8px')}
+          ${note(['默认角色=浏览者，可多选角色；权限与授权资源取并集。左侧勾选 / 取消与右侧待新增列表实时同步。', '无操作权限冲突时为「—」；有冲突才可选并集或交集，默认并集。'], 'margin-top:8px')}
         </div>
       </div>
     </div>
